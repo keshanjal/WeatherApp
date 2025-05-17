@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.wearherapp.databinding.ActivityMainBinding
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Callback
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
              override fun onResponse(call: Call<WeatherApp>,response: Response<WeatherApp>){
                  val responseBody = response.body()
                  if(response.isSuccessful && responseBody != null){
+
                      val temperature = responseBody.main.temp.toString()
 
 
@@ -85,11 +87,10 @@ class MainActivity : AppCompatActivity() {
                      binding.day.text =  dayName(System.currentTimeMillis())
                      binding.date.text = date()
                      binding.windspeed.text = "$windspeed m/s"
-                     binding.condition.text = "$condition"
-                     binding.sunrise.text = "$sunrise"
-                     binding.sunset.text = "$sunset"
-                     binding.weather.text = "$condition"
-                     binding.condition.text = "$condition"
+                     binding.condition.text = condition
+                     binding.sunrise.text = "${time(sunrise.toLong())}"
+                     binding.sunset.text = "${time(sunset.toLong())}"
+                     binding.weather.text = condition
                      binding.sea.text = "$sealevel hpa"
 
 
@@ -97,6 +98,12 @@ class MainActivity : AppCompatActivity() {
 
 //                        Log.d("TAG", "onResponse: $temperature")
 
+// change the background image according to the weather condition
+                     changeImagesAccordingToWeatherCondition(condition)
+
+                 }
+                 else {
+                     Log.e("API_ERROR", "Response not successful: ${response.errorBody()?.string()}")
                  }
              }
 
@@ -111,13 +118,46 @@ class MainActivity : AppCompatActivity() {
 
 
         }
-    fun dayName(timestamp:Long):String{
+
+    // change the background image according to the weather condition
+    private fun changeImagesAccordingToWeatherCondition(conditions: String) {
+        when (conditions){
+            "Clear Sky", "Sunny", "Clear" ->{
+                binding.root.setBackgroundResource(R.drawable.sunny_background)
+                binding.lottieAnimationView.setAnimation(R.raw.sun)
+            }
+            "Partly Clouds", "Clouds", "Overcast", "Mist", "Foggy" ->{
+                binding.root.setBackgroundResource(R.drawable.colud_background)
+                binding.lottieAnimationView.setAnimation(R.raw.cloud)
+            }
+            "Light Rain", "Rain","Drizzle", "Moderate Rain", "Showers", "Heavy Rain" -> {
+                binding.root.setBackgroundResource(R.drawable.rain_background)
+                binding.lottieAnimationView.setAnimation(R.raw.rain)
+            }
+            "Light Snow", "Moderate Snow","Snow", "Heavy Snow", "Blizzard" -> {
+                binding.root.setBackgroundResource(R.drawable.snow_background)
+                binding.lottieAnimationView.setAnimation(R.raw.snow)
+            }
+            else -> {
+                binding.root.setBackgroundResource(R.drawable.sunny_background)
+                binding.lottieAnimationView.setAnimation(R.raw.sun)
+            }
+
+        }
+        binding.lottieAnimationView.playAnimation()
+    }
+
+    private fun dayName(timestamp:Long):String{
         val sdf = SimpleDateFormat("EEEE", Locale.getDefault())
         return sdf.format((Date()))
 
     }
-    fun date():String{
+   private fun date():String{
         val sdf = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
         return sdf.format((Date()))
+    }
+    private fun time(timestamp: Long):String{
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        return sdf.format((Date(timestamp*1000)))
     }
 }

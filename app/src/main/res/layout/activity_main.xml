@@ -19,7 +19,6 @@
         android:background="@drawable/searchviewshape"
         android:iconifiedByDefault="false"
         android:queryHint="Search for a City..."
-        style="@themes/MySearchViewStyle"
         android:searchIcon="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

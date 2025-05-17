@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// api key  0e0f4a6453527bc3d2d0aecbcf346a30
+
 class MainActivity : AppCompatActivity() {
 
     // view binding
@@ -64,6 +64,8 @@ class MainActivity : AppCompatActivity() {
                  val responseBody = response.body()
                  if(response.isSuccessful && responseBody != null){
 
+                     Log.d("TAG", "onResponse: $responseBody")
+
                      val temperature = responseBody.main.temp.toString()
 
 
@@ -96,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-//                        Log.d("TAG", "onResponse: $temperature")
+                        Log.d("TAG", "onResponse: $temperature")
 
 // change the background image according to the weather condition
                      changeImagesAccordingToWeatherCondition(condition)
